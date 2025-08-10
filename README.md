@@ -1,4 +1,4 @@
-# 📊 Painel: Indicadores Macroeconômicos dos EUA (Inflação, Juros e M2) — 2025
+# Painel: Indicadores Macroeconômicos dos EUA (Inflação, Juros e M2)
 
 **Descrição**  
 Painel em Power BI que monitora indicadores macroeconômicos dos Estados Unidos: **Fed Funds Rate**, **Inflação (CPI - média móvel/12 meses)** e **Oferta Monetária M2**. O objetivo é acompanhar tendências e apoiar análises sobre política monetária e riscos inflacionários.
@@ -27,23 +27,6 @@ Painel em Power BI que monitora indicadores macroeconômicos dos Estados Unidos:
 
 ---
 
-## 🗂 Estrutura sugerida do repositório
-```
-/data
-  ├─ m2_monthly.csv
-  ├─ cpi_monthly.csv
-  └─ fed_funds_rate.csv
-/reports
-  └─ painel_powerbi.pbix
-/visuals
-  └─ screenshots/
-/docs
-  └─ README_data_sources.md
-README.md
-```
-
----
-
 ## 🔁 Como atualizar os dados (passo a passo rápido)
 1. **Obter os dados brutos**:
    - M2: série mensal do M2 (nominal) — FRED.
@@ -58,20 +41,23 @@ README.md
 
 ---
 
-## 🧮 Medidas DAX úteis (exemplos)
+## 🧮 Medidas DAX úteis (card Oferta Monetária M2)
 ```DAX
-Inflação_12m = 
-CALCULATE(
-  DIVIDE(
-    MAX(CPI[Valor]) - CALCULATE(MAX(CPI[Valor]), DATEADD(CPI[Data], -12, MONTH)),
-    CALCULATE(MAX(CPI[Valor]), DATEADD(CPI[Data], -12, MONTH))
-  ),
-  ALLSELECTED()
-)
-
-M2_trilhoes = SUM(M2[Valor]) / 1000000000000
+M2_Ultimo_card = 
+VAR UltimaData = MAX('EUA-macro_data_25yrs_ptBR'[Date])
+VAR Valor = 
+    CALCULATE(
+        MAX('EUA-macro_data_25yrs_ptBR'[M2_Money_Supply]),
+        'EUA-macro_data_25yrs_ptBR'[Date] = UltimaData
+    )
+RETURN
+FORMAT(Valor, "#,0.00") & " Tri"
 ```
 > Ajuste nomes de tabelas e colunas conforme seu modelo.
+
+---
+## Resultado Final 
+<img width="1082" height="606" alt="Painel_Final_economico _EUA" src="https://github.com/user-attachments/assets/dd901b92-921a-4898-a8f5-dd120af84c28" />
 
 ---
 
@@ -79,13 +65,6 @@ M2_trilhoes = SUM(M2[Valor]) / 1000000000000
 - **FRED (Federal Reserve)** — séries de Fed Funds e M2.  
 - **BLS (Bureau of Labor Statistics)** — CPI (inflação).  
 - Relatórios e comunicados do **Federal Reserve** e publicações econômicas.
-
----
-
-## ✅ Boas práticas
-- Versionar CSVs com data no nome (ex.: `m2_monthly_2025-08.csv`) para auditoria.  
-- Documentar transformações em `NOTAS.md` (ex.: ajustes sazonais, conversões de unidade).  
-- Automatizar ETL com scripts Python se precisar de atualizações frequentes.
 
 ---
 
